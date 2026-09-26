@@ -191,9 +191,7 @@ if (Test-Path -LiteralPath $resRoot) {
 New-Item -ItemType Directory -Path $resRoot -Force | Out-Null
 
 $resLanguages = @(
-  @{ SourceDirectory = 'lang-zh-CN'; Language = 'zh-CN' },
-  @{ SourceDirectory = 'lang-en-US'; Language = 'en-US' },
-  @{ SourceDirectory = 'lang-zh-HK'; Language = 'zh-HK' }
+  @{ SourceDirectory = 'lang-zh-CN'; Language = 'zh-CN' }
 )
 foreach ($resourceLanguage in $resLanguages) {
   $source = Join-Path (Join-Path $msixDir $resourceLanguage.SourceDirectory) 'resources.resw'
@@ -251,9 +249,7 @@ $requiredPriFragments = @(
   $IdentityName,
   'AppName',
   'AppDescription',
-  'zh-CN',
-  'en-US',
-  'zh-HK'
+  'zh-CN'
 )
 foreach ($fragment in $requiredPriFragments) {
   if (-not $priDumpContent.Contains($fragment, [System.StringComparison]::OrdinalIgnoreCase)) {

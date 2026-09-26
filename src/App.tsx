@@ -7,7 +7,7 @@ import { TileShowcase } from "./components/TileShowcase";
 import { ToastContainer } from "./components/Toast";
 import { tabToIndentListener } from "indent-textarea";
 import { getConfig } from "./features/settings/api";
-import { applyTheme, watchSystemTheme } from "./features/settings/theme";
+import { applyTheme, applyUiScale, watchSystemTheme } from "./features/settings/theme";
 import type { AppConfig, ThemeOption } from "./features/settings/types";
 import { getInitialRoute } from "./features/windows/windowRoutes";
 import { syncLanguage } from "./locales";
@@ -22,8 +22,9 @@ function App() {
     getConfig()
       .then((config) => {
         const theme = (config.theme || "system") as ThemeOption;
-        applyTheme(theme);
-        cleanup = watchSystemTheme(theme);
+        applyTheme(theme, config.accentColor);
+        applyUiScale(config.uiScale);
+        cleanup = watchSystemTheme(theme, config.accentColor);
         document.documentElement.style.setProperty(
           "--tab-indent-size",
           String(config.tabIndentSize ?? 2),
@@ -38,9 +39,10 @@ function App() {
     let themeCleanup = () => {};
     const unlisten = listen<AppConfig>("config-changed", (event) => {
       const theme = (event.payload.theme || "system") as ThemeOption;
-      applyTheme(theme);
+      applyTheme(theme, event.payload.accentColor);
+      applyUiScale(event.payload.uiScale);
       themeCleanup();
-      themeCleanup = watchSystemTheme(theme);
+      themeCleanup = watchSystemTheme(theme, event.payload.accentColor);
       document.documentElement.style.setProperty(
         "--tab-indent-size",
         String(event.payload.tabIndentSize ?? 2),

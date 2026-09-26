@@ -44,6 +44,10 @@ pub struct AppConfig {
     pub tile_color_mode: String,
     #[serde(default = "default_theme")]
     pub theme: String,
+    #[serde(default = "default_accent_color")]
+    pub accent_color: String,
+    #[serde(default = "default_ui_scale")]
+    pub ui_scale: f64,
     #[serde(default = "default_font_size")]
     pub font_size: u32,
     #[serde(default = "default_surface_font_size")]
@@ -717,7 +721,9 @@ impl NoteStore {
         // self.data_dir 与之不同（如 FLORAL_NOTEPAPER_DATA_DIR 被改），尝试搬运旧数据
         self.migrate_data_dir_if_relocated(&mut config);
         config.data_dir = Some(self.data_dir.to_string_lossy().to_string());
+        config.locale = default_locale();
         config.tab_indent_size = config.tab_indent_size.clamp(1, 8);
+        config.ui_scale = normalize_ui_scale(config.ui_scale);
         write_json_atomic(&path, &config)?;
         fs::create_dir_all(self.data_dir.join("notes"))?;
         if self.migrate_macos_shortcut_default(&mut config)? {
@@ -729,7 +735,9 @@ impl NoteStore {
     pub fn save_config(&self, mut config: AppConfig) -> Result<AppConfig, AppError> {
         self.ensure_config_dir()?;
         config.data_dir = Some(self.data_dir.to_string_lossy().to_string());
+        config.locale = default_locale();
         config.tab_indent_size = config.tab_indent_size.clamp(1, 8);
+        config.ui_scale = normalize_ui_scale(config.ui_scale);
         is_safe_data_dir(&self.data_dir)?;
         fs::create_dir_all(self.data_dir.join("notes"))?;
         write_json_atomic(&self.config_path(), &config)?;
@@ -1141,6 +1149,8 @@ impl NoteStore {
             tile_color: default_tile_color(),
             tile_color_mode: default_tile_color_mode(),
             theme: default_theme(),
+            accent_color: default_accent_color(),
+            ui_scale: default_ui_scale(),
             font_size: default_font_size(),
             surface_font_size: default_surface_font_size(),
             tab_indent_size: default_tab_indent_size(),
@@ -1692,6 +1702,22 @@ fn default_theme() -> String {
     "system".into()
 }
 
+fn default_accent_color() -> String {
+    "#2d5a3d".into()
+}
+
+fn default_ui_scale() -> f64 {
+    1.0
+}
+
+fn normalize_ui_scale(scale: f64) -> f64 {
+    if scale.is_finite() {
+        scale.clamp(0.8, 1.8)
+    } else {
+        1.0
+    }
+}
+
 fn default_font_size() -> u32 {
     14
 }
@@ -1885,6 +1911,8 @@ mod tests {
         assert!(!default_config.tile_double_click_to_edit);
         assert!(!default_config.tile_save_returns_to_pin);
         assert_eq!(default_config.theme, "system");
+        assert_eq!(default_config.accent_color, "#2d5a3d");
+        assert_eq!(default_config.ui_scale, 1.0);
         assert_eq!(default_config.locale, "zh-CN");
         assert_eq!(
             default_config.data_dir.as_deref(),
@@ -1903,6 +1931,8 @@ mod tests {
             tile_color: "#efe8dc".into(),
             tile_color_mode: "custom".into(),
             theme: "dark".into(),
+            accent_color: "#8a419b".into(),
+            ui_scale: 1.4,
             font_size: 16,
             surface_font_size: 16,
             tab_indent_size: 2,
@@ -1933,6 +1963,7 @@ mod tests {
 
         let loaded = store.load_config().expect("reload config");
         saved.data_dir = Some(store.data_dir().to_string_lossy().to_string());
+        saved.locale = default_locale();
         assert_eq!(loaded, saved);
     }
 
@@ -1986,6 +2017,8 @@ mod tests {
         assert!(!loaded.tile_double_click_to_edit);
         assert!(!loaded.tile_save_returns_to_pin);
         assert_eq!(loaded.theme, "system");
+        assert_eq!(loaded.accent_color, "#2d5a3d");
+        assert_eq!(loaded.ui_scale, 1.0);
         assert_eq!(loaded.locale, "zh-CN");
         assert_eq!(loaded.font_size, 14);
         assert_eq!(loaded.surface_font_size, 14);

@@ -21,7 +21,6 @@ function collectLeafKeys(tree: TranslationTree, prefix = ""): string[] {
 
 describe("locale resources", () => {
   const sourceKeys = collectLeafKeys(translationOverrides[DEFAULT_LOCALE]);
-  const sourceKeySet = new Set(sourceKeys);
 
   it("resolves every supported locale with complete source-locale coverage", () => {
     for (const locale of SUPPORTED_LOCALES) {
@@ -29,15 +28,7 @@ describe("locale resources", () => {
     }
   });
 
-  it("keeps non-source locale overrides within the source-locale key set", () => {
-    for (const locale of SUPPORTED_LOCALES) {
-      if (locale === DEFAULT_LOCALE) {
-        continue;
-      }
-
-      for (const key of collectLeafKeys(translationOverrides[locale])) {
-        expect(sourceKeySet.has(key)).toBe(true);
-      }
-    }
+  it("ships only simplified Chinese translations", () => {
+    expect(Object.keys(translationOverrides)).toEqual([DEFAULT_LOCALE]);
   });
 });

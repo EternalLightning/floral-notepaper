@@ -14,6 +14,10 @@
           t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
         }
         document.documentElement.setAttribute("data-theme", t);
+        var scale = Number(localStorage.getItem("ui-scale"));
+        if (!window.__TAURI_INTERNALS__ && Number.isFinite(scale) && scale >= 0.8 && scale <= 1.8) {
+          document.documentElement.style.zoom = String(scale);
+        }
       })();
     </script>
     <style>

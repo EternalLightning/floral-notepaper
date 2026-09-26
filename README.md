@@ -1,7 +1,5 @@
 <!-- markdownlint-disable -->
 
-**简体中文** | [繁體中文](README_zh-HK.md) | [English](README_en-US.md)
-
 <div align="center">
 
 <img src="./src-tauri/icons/icon.png" width="120" alt="花笺图标">

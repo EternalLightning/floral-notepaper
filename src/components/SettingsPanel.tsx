@@ -18,8 +18,14 @@ import {
 } from "../features/settings/shortcutRecorder";
 import { useShortcutRecorder } from "../features/settings/useShortcutRecorder";
 import { DEFAULT_TILE_COLOR, normalizeTileColor } from "../features/settings/tileColor";
-import { applyTheme, watchSystemTheme } from "../features/settings/theme";
-import { LOCALE_OPTIONS } from "../locales/locale-whitelist";
+import {
+  applyAccentColor,
+  applyTheme,
+  applyUiScale,
+  DEFAULT_ACCENT_COLOR,
+  normalizeAccentColor,
+  watchSystemTheme,
+} from "../features/settings/theme";
 import { SlidingButtonGroup } from "./SlidingButtonGroup";
 
 const HARMONY_FONT_LICENSE_URL = new URL("../assets/fonts/LICENSE_Fonts", import.meta.url).href;
@@ -79,15 +85,6 @@ export function SettingsPanel({ config, onChange, onMigrateDataDir, onClose }: S
     ],
     [t],
   );
-  const localeOptions = useMemo(
-    () =>
-      LOCALE_OPTIONS.map(({ value, labelKey, defaultLabel }) => ({
-        value,
-        label: t(labelKey, { defaultValue: defaultLabel }),
-      })),
-    [t],
-  );
-
   return (
     <aside className="w-[360px] h-full shrink-0 border-l border-paper-deep/30 bg-cloud/92 backdrop-blur-sm flex flex-col">
       <div className="flex items-center justify-between h-11 px-4 border-b border-paper-deep/25">
@@ -124,10 +121,65 @@ export function SettingsPanel({ config, onChange, onMigrateDataDir, onClose }: S
             value={config.theme}
             onChange={(v: ThemeOption) => {
               setConfigValue("theme", v);
-              applyTheme(v);
-              watchSystemTheme(v);
+              applyTheme(v, config.accentColor);
+              watchSystemTheme(v, config.accentColor);
             }}
           />
+        </section>
+
+        <section className="space-y-2">
+          <label className="block text-[11px] font-body text-ink-faint">
+            {t("settings.theme.accentColor", { defaultValue: "主题颜色" })}
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              aria-label={t("settings.theme.accentColor", { defaultValue: "主题颜色" })}
+              value={normalizeAccentColor(config.accentColor)}
+              onChange={(event) => {
+                setConfigValue("accentColor", event.target.value);
+                applyAccentColor(event.target.value);
+              }}
+              className="w-10 h-8 rounded-lg border border-paper-deep/40 bg-paper-warm/70 cursor-pointer"
+            />
+            <span className="flex-1 text-[12px] font-mono text-ink-soft">
+              {normalizeAccentColor(config.accentColor)}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setConfigValue("accentColor", DEFAULT_ACCENT_COLOR);
+                applyAccentColor(DEFAULT_ACCENT_COLOR);
+              }}
+              className="h-8 px-2.5 rounded-lg border border-paper-deep/45 text-[11px] text-ink-faint hover:text-bamboo hover:bg-bamboo-mist/50 transition-colors cursor-pointer"
+            >
+              {t("common.default", { defaultValue: "默认" })}
+            </button>
+          </div>
+        </section>
+
+        <section className="space-y-2">
+          <label className="block text-[11px] font-body text-ink-faint">
+            {t("settings.uiScale", { defaultValue: "界面大小" })}
+          </label>
+          <div className="flex items-center gap-3 h-9 rounded-lg px-2.5 bg-paper-warm/45 border border-paper-deep/25">
+            <input
+              type="range"
+              min={80}
+              max={180}
+              step={10}
+              value={Math.round((config.uiScale ?? 1) * 100)}
+              onChange={(event) => {
+                const scale = Number(event.target.value) / 100;
+                setConfigValue("uiScale", scale);
+                applyUiScale(scale);
+              }}
+              className="flex-1 h-1 accent-bamboo cursor-pointer"
+            />
+            <span className="text-[12px] font-mono text-ink-soft tabular-nums w-10 text-right">
+              {Math.round((config.uiScale ?? 1) * 100)}%
+            </span>
+          </div>
         </section>
 
         <section className="space-y-2">
@@ -149,17 +201,6 @@ export function SettingsPanel({ config, onChange, onMigrateDataDir, onClose }: S
               {t("settings.selectFolder", { defaultValue: "选择文件夹" })}
             </button>
           </div>
-        </section>
-
-        <section className="space-y-2">
-          <label className="block text-[11px] font-body text-ink-faint">
-            {t("settings.locale.label", { defaultValue: "语言" })}
-          </label>
-          <SlidingButtonGroup
-            options={localeOptions}
-            value={config.locale}
-            onChange={(value) => setConfigValue("locale", value)}
-          />
         </section>
 
         <section className="space-y-2">

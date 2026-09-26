@@ -28,13 +28,13 @@ describe("notes api error localization", () => {
   });
 
   test("localizes serialized category errors when interpolation details can be recovered", () => {
-    const translate = i18n.getFixedT("en-US");
+    const translate = i18n.getFixedT("zh-CN");
 
     expect(getErrorMessage("categoryNotFound: 分类「工作」不存在", translate)).toBe(
-      'Category "工作" not found',
+      "分类「工作」不存在",
     );
     expect(getErrorMessage("categoryAlreadyExists: 分类「工作」已存在", translate)).toBe(
-      'Category "工作" already exists',
+      "分类「工作」已存在",
     );
   });
 

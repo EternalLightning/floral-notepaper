@@ -675,13 +675,13 @@ input::placeholder {
   color: #4a8db7;
 }
 
-/* Tip — sage green */
+/* Tip follows the selected accent color */
 .markdown-alert-tip {
-  border-color: #3a7a52;
-  background: rgba(58, 122, 82, 0.06);
+  border-color: var(--color-bamboo-light);
+  background: color-mix(in srgb, var(--color-bamboo-light) 6%, transparent);
 }
 .markdown-alert-tip .markdown-alert-title {
-  color: #3a7a52;
+  color: var(--color-bamboo-light);
 }
 
 /* Important — muted purple */
@@ -721,11 +721,11 @@ input::placeholder {
 }
 
 :root[data-theme="dark"] .markdown-alert-tip {
-  border-color: #5fc085;
-  background: rgba(95, 192, 133, 0.08);
+  border-color: var(--color-bamboo-light);
+  background: color-mix(in srgb, var(--color-bamboo-light) 8%, transparent);
 }
 :root[data-theme="dark"] .markdown-alert-tip .markdown-alert-title {
-  color: #5fc085;
+  color: var(--color-bamboo-light);
 }
 
 :root[data-theme="dark"] .markdown-alert-important {

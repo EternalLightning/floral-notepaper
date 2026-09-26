@@ -220,12 +220,7 @@
       "editor": "编辑器字号",
       "surface": "小窗/磁贴字号"
     },
-    "locale": {
-      "enUS": "English",
-      "label": "语言",
-      "zhCN": "简体中文",
-      "zhHK": "繁體中文"
-    },
+    "uiScale": "界面大小",
     "dataDir": "数据目录",
     "openAtCursor": "快捷键打开时跟随鼠标位置",
     "quickNoteShortcut": "快捷记录快捷键",
@@ -253,6 +248,7 @@
       "pressHint": "按下快捷键；按 Delete 清空。"
     },
     "theme": {
+      "accentColor": "主题颜色",
       "dark": "深色",
       "label": "主题",
       "light": "浅色",
